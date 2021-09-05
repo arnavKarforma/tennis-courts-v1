@@ -1,26 +1,41 @@
 package com.tenniscourts.tenniscourts;
 
 import com.tenniscourts.config.BaseRestController;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@AllArgsConstructor
+import java.util.List;
+
+@RestController
 public class TennisCourtController extends BaseRestController {
 
-    private final TennisCourtService tennisCourtService;
+    private final TennisCourtServiceImpl tennisCourtService;
 
-    //TODO: implement rest and swagger
-    public ResponseEntity<Void> addTennisCourt(TennisCourtDTO tennisCourtDTO) {
-        return ResponseEntity.created(locationByEntity(tennisCourtService.addTennisCourt(tennisCourtDTO).getId())).build();
+    @Autowired
+    public TennisCourtController(final TennisCourtServiceImpl tennisCourtService) {
+        this.tennisCourtService = tennisCourtService;
     }
 
-    //TODO: implement rest and swagger
-    public ResponseEntity<TennisCourtDTO> findTennisCourtById(Long tennisCourtId) {
-        return ResponseEntity.ok(tennisCourtService.findTennisCourtById(tennisCourtId));
+    @RequestMapping(value = "/tennisCourt", method = RequestMethod.POST)
+    public ResponseEntity<Void> addTennisCourt(@RequestBody final TennisCourtDTO tennisCourtDTO) {
+        return ResponseEntity.created(locationByEntity(
+                this.tennisCourtService.addTennisCourt(tennisCourtDTO).getId())).build();
     }
 
-    //TODO: implement rest and swagger
-    public ResponseEntity<TennisCourtDTO> findTennisCourtWithSchedulesById(Long tennisCourtId) {
-        return ResponseEntity.ok(tennisCourtService.findTennisCourtWithSchedulesById(tennisCourtId));
+    @RequestMapping(value = "/tennisCourt/{id}", method = RequestMethod.GET)
+    public ResponseEntity<TennisCourtDTO> findTennisCourtById(@PathVariable(value = "id") final Long tennisCourtId) {
+        return ResponseEntity.ok(this.tennisCourtService.findTennisCourtById(tennisCourtId));
+    }
+
+    @RequestMapping(value = "/tennisCourt/list-schedule/{id}", method = RequestMethod.GET)
+    public ResponseEntity<TennisCourtDTO> findTennisCourtWithSchedulesById(@PathVariable(value = "id") final Long tennisCourtId) {
+        return ResponseEntity.ok(this.tennisCourtService.findTennisCourtWithSchedulesById(tennisCourtId));
+    }
+
+
+    @RequestMapping(value = "/tennisCourt")
+    public ResponseEntity<List<TennisCourtDTO>> listAllTennisCourts() {
+        return ResponseEntity.ok(this.tennisCourtService.listAllTennisCourts());
     }
 }

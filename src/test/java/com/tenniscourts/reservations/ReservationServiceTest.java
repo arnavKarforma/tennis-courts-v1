@@ -17,20 +17,21 @@ import java.time.LocalDateTime;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
-@ContextConfiguration(classes = ReservationService.class)
+@ContextConfiguration(classes = ReservationServiceImpl.class)
 public class ReservationServiceTest {
 
     @InjectMocks
-    ReservationService reservationService;
+    private
+    ReservationServiceImpl reservationServiceImpl;
 
     @Test
     public void getRefundValueFullRefund() {
-        Schedule schedule = new Schedule();
+        final Schedule schedule = new Schedule();
 
-        LocalDateTime startDateTime = LocalDateTime.now().plusDays(2);
+        final LocalDateTime startDateTime = LocalDateTime.now().plusDays(2);
 
         schedule.setStartDateTime(startDateTime);
 
-        Assert.assertEquals(reservationService.getRefundValue(Reservation.builder().schedule(schedule).value(new BigDecimal(10L)).build()), new BigDecimal(10));
+        Assert.assertEquals(this.reservationServiceImpl.getRefundValue(Reservation.builder().schedule(schedule).value(new BigDecimal(10L)).build()), new BigDecimal(10));
     }
 }
