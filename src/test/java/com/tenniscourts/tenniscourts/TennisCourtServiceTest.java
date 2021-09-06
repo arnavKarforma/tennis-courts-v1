@@ -37,7 +37,7 @@ public class TennisCourtServiceTest {
         final TennisCourt tennisCourtInDb = TestDataUtilities.getTestTennisCourt();
         final TennisCourt tennisCourtBeSaved = TestDataUtilities.getTestTennisCourt();
         final TennisCourtDTO tennisCourtDTO = TestDataUtilities.getTestTennisCourtResponseDTO();
-        final TennisCourtDTO tennisCourtDTORequest = TestDataUtilities.getTestTennisCourtResponseDTO();
+        final TennisCourtDTO tennisCourtDTORequest = TestDataUtilities.getTestTennisCourtDTO();
         tennisCourtBeSaved.setId(null);
 
         when(this.tennisCourtMapper.map(tennisCourtDTORequest)).thenReturn(tennisCourtBeSaved);
@@ -92,7 +92,7 @@ public class TennisCourtServiceTest {
     public void findTennisCourtWithSchedulesByIdSuccess() {
         final TennisCourt tennisCourtInDb = TestDataUtilities.getTestTennisCourt();
         final TennisCourtDTO tennisCourtDTO = TestDataUtilities.getTestTennisCourtResponseDTO();
-        final List<ScheduleDTO> schedules = List.of(TestDataUtilities.getTestScheduleDTO());
+        final List<ScheduleDTO> schedules = List.of(TestDataUtilities.getTestScheduleResponseDTO());
 
         when(this.tennisCourtRepository.findById(1L)).thenReturn(java.util.Optional.of(tennisCourtInDb));
         when(this.tennisCourtMapper.map(tennisCourtInDb)).thenReturn(tennisCourtDTO);

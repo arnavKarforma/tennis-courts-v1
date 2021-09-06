@@ -21,8 +21,7 @@ import java.time.LocalDateTime;
 public class ReservationServiceTest {
 
     @InjectMocks
-    private
-    ReservationServiceImpl reservationServiceImpl;
+    private ReservationServiceImpl reservationServiceImpl;
 
     @Test
     public void getRefundValueFullRefund() {

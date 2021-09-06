@@ -6,6 +6,7 @@ import com.tenniscourts.tenniscourts.TennisCourtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,8 +28,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    @Transactional
     public ScheduleDTO addSchedule(final Long tennisCourtId, final CreateScheduleRequestDTO createScheduleRequestDTO) {
-        final TennisCourt court = this.tennisCourtRepository.findById(createScheduleRequestDTO.getTennisCourtId())
+        final TennisCourt court = this.tennisCourtRepository.findById(tennisCourtId)
                 .orElseThrow(() -> {
                     throw new EntityNotFoundException("Tennis Court not found");
                 });
