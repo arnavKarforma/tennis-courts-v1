@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    List<Schedule> findByTennisCourt_IdOrderByStartDateTime(Long id);
-
     @Query("SELECT schedule FROM Schedule schedule WHERE schedule.startDateTime > (:startDate) AND schedule.endDateTime < (:endDate)")
     List<Schedule> findSchedules(LocalDateTime startDate, LocalDateTime endDate);
+
+    List<Schedule> findByTennisCourt_IdOrderByStartDateTime(Long id);
 
 }

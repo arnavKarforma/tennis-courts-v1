@@ -5,6 +5,7 @@ import com.tenniscourts.schedules.ScheduleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,8 @@ public class TennisCourtServiceImpl implements TennisCourtService {
     @Override
     public TennisCourtDTO addTennisCourt(final TennisCourtDTO tennisCourt) {
         return this.tennisCourtMapper.map(
-                this.tennisCourtRepository.save(this.tennisCourtMapper.map(tennisCourt)));
+                this.tennisCourtRepository.save(
+                        this.tennisCourtMapper.map(tennisCourt)));
     }
 
     @Override
@@ -39,6 +41,7 @@ public class TennisCourtServiceImpl implements TennisCourtService {
     }
 
     @Override
+    @Transactional
     public TennisCourtDTO findTennisCourtWithSchedulesById(final Long tennisCourtId) {
         final TennisCourtDTO tennisCourtDTO = findTennisCourtById(tennisCourtId);
         tennisCourtDTO.setTennisCourtSchedules(this.scheduleService.findSchedulesByTennisCourtId(tennisCourtId));
