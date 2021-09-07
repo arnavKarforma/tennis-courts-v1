@@ -1,6 +1,9 @@
 package com.tenniscourts.schedules;
 
 import com.tenniscourts.config.BaseRestController;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,11 @@ public class ScheduleController extends BaseRestController {
         this.scheduleService = scheduleService;
     }
 
+    @ApiOperation(value = "It will create a new Schedule")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Schedule created"),
+            @ApiResponse(code = 404, message = "Tennis Court not found")
+    })
     @RequestMapping(value = "/schedule", method = RequestMethod.POST)
     public ResponseEntity<Void> addScheduleTennisCourt(@RequestBody final CreateScheduleRequestDTO createScheduleRequestDTO) {
         return ResponseEntity.created(locationByEntity(
@@ -29,6 +37,11 @@ public class ScheduleController extends BaseRestController {
                         createScheduleRequestDTO).getId())).build();
     }
 
+    @ApiOperation(value = "It will create a new Schedule")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Schedule searched"),
+            @ApiResponse(code = 404, message = "Schedules not found")
+    })
     @RequestMapping(value = "/schedule/availability", method = RequestMethod.GET)
     public ResponseEntity<List<ScheduleDTO>> findSchedulesByDates(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final
                                                                   LocalDate startDate,
@@ -40,6 +53,11 @@ public class ScheduleController extends BaseRestController {
                         LocalDateTime.of(endDate, LocalTime.of(23, 59))));
     }
 
+    @ApiOperation(value = "It will create a new Schedule")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Schedule searched"),
+            @ApiResponse(code = 404, message = "Schedules not found")
+    })
     @RequestMapping(value = "/schedule/{id}", method = RequestMethod.GET)
     public ResponseEntity<ScheduleDTO> findByScheduleId(@PathVariable(value = "id") final Long scheduleId) {
         return ResponseEntity.ok(this.scheduleService.findSchedule(scheduleId));

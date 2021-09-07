@@ -45,7 +45,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public List<ScheduleDTO> findSchedulesByDates(final LocalDateTime startDate, final LocalDateTime endDate) {
-        return this.scheduleMapper.map(this.scheduleRepository.findSchedules(startDate, endDate));
+        final List<Schedule> schedules = this.scheduleRepository.findSchedules(startDate, endDate);
+        if (schedules.isEmpty()) {
+            throw new EntityNotFoundException("Schedule not found.");
+        }
+        return this.scheduleMapper.map(schedules);
     }
 
     @Override

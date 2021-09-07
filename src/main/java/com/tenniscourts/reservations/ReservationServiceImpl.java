@@ -64,12 +64,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public ReservationDTO cancelReservation(final Long reservationId) {
-        return this.reservationMapper.map(this.cancel(reservationId));
-    }
-
-    @Override
-    public Reservation cancel(final Long reservationId) {
-        return this.reservationRepository.findById(reservationId).map(reservation -> {
+        final Reservation cancelledReservation = this.reservationRepository.findById(reservationId).map(reservation -> {
 
             this.validateCancellationOrReschedule(reservation);
 
@@ -79,6 +74,7 @@ public class ReservationServiceImpl implements ReservationService {
         }).orElseThrow(() -> {
             throw new EntityNotFoundException("Reservation not found.");
         });
+        return this.reservationMapper.map(cancelledReservation);
     }
 
     @Override
@@ -108,13 +104,13 @@ public class ReservationServiceImpl implements ReservationService {
                 LocalDateTime.now(), reservation.getSchedule().getStartDateTime());
 
         if (minutes > 0 && minutes < 2 * 60) {
-            return reservation.getValue().multiply(BigDecimal.valueOf(3 / 4));
+            return reservation.getValue().multiply(BigDecimal.valueOf(0.25));
         }
         else if (minutes >= 2 * 60 && minutes < 12 * 60) {
-            return reservation.getValue().multiply(BigDecimal.valueOf(1 / 2));
+            return reservation.getValue().multiply(BigDecimal.valueOf(0.5));
         }
         else if (minutes >= 12 * 60 && minutes < 24 * 60) {
-            return reservation.getValue().multiply(BigDecimal.valueOf(1 / 4));
+            return reservation.getValue().multiply(BigDecimal.valueOf(0.75));
         }
         else if (minutes >= 24 * 60) {
             return reservation.getValue();

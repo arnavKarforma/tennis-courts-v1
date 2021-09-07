@@ -3,7 +3,6 @@ package com.tenniscourts.schedules;
 import com.tenniscourts.TestDataUtilities;
 import com.tenniscourts.exceptions.EntityNotFoundException;
 import com.tenniscourts.tenniscourts.TennisCourt;
-import com.tenniscourts.tenniscourts.TennisCourtDTO;
 import com.tenniscourts.tenniscourts.TennisCourtRepository;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
@@ -20,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ScheduleServiceTest  {
+public class ScheduleServiceTest {
 
     @InjectMocks
     private ScheduleServiceImpl scheduleService;
@@ -51,7 +49,6 @@ public class ScheduleServiceTest  {
         Assert.assertEquals(scheduleDTORes.getId(), scheduleInDb.getId());
         Assert.assertEquals(scheduleDTORes.getTennisCourt().getId(), tennisCourt.getId());
         Assert.assertEquals(scheduleDTORes.getTennisCourt().getName(), tennisCourt.getName());
-        Assert.assertEquals(scheduleDTORes.getStartDateTime(), scheduleDTORequest.getStartDateTime());
 
         scheduleInDb.setId(null);
         //Todo: Add argument captor to check the values
@@ -63,17 +60,13 @@ public class ScheduleServiceTest  {
 
     @Test
     public void addTennisCourtFailureTennisCourtNotFound() {
-        final Schedule scheduleInDb = TestDataUtilities.getTestSchedule();
         final Schedule scheduleBeSaved = TestDataUtilities.getTestSchedule();
         final CreateScheduleRequestDTO scheduleDTORequest = TestDataUtilities.getTestScheduleDTO();
-        final ScheduleDTO ScheduleResponseDTO = TestDataUtilities.getTestScheduleResponseDTO();
         scheduleBeSaved.setId(null);
 
         when(this.tennisCourtRepository.findById(1L)).thenReturn(Optional.empty());
-        when(this.scheduleRepository.save(any(Schedule.class))).thenReturn(scheduleInDb);
-        when(this.scheduleMapper.map(any(Schedule.class))).thenReturn(ScheduleResponseDTO);
 
-        final Throwable throwable = catchThrowable(()-> this.scheduleService.addSchedule(1L, scheduleDTORequest));
+        final Throwable throwable = catchThrowable(() -> this.scheduleService.addSchedule(1L, scheduleDTORequest));
 
         Assert.assertNotEquals(null, throwable);
         Assert.assertTrue(throwable instanceof EntityNotFoundException);
