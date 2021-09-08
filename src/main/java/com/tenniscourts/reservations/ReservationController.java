@@ -5,11 +5,12 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @RestController
@@ -24,7 +25,7 @@ public class ReservationController extends BaseRestController {
             @ApiResponse(code = 404, message = "Guest or Schedule not found")
     })
     @RequestMapping(path = "/reservation", method = RequestMethod.POST)
-    public ResponseEntity<Void> bookReservation(@RequestBody final CreateReservationRequestDTO createReservationRequestDTO) throws Exception {
+    public ResponseEntity<Void> bookReservation(@RequestBody final CreateReservationRequestDTO createReservationRequestDTO) {
         return ResponseEntity.created(locationByEntity(this.reservationService.bookReservation(createReservationRequestDTO).getId())).build();
     }
 
@@ -56,8 +57,8 @@ public class ReservationController extends BaseRestController {
             @ApiResponse(code = 404, message = "No reservation or new schedule not found"),
             @ApiResponse(code = 400, message = "Reservation not in correct status or new schedule is not on valid startTime")
     })
-    @RequestMapping(path = "/reservation/reschedule/{reservationId}/{scheduleId}", method = RequestMethod.PUT)
-    public ResponseEntity<ReservationDTO> rescheduleReservation(@PathVariable("reservationId") final Long reservationId, @PathVariable("scheduleId") final Long scheduleId) throws Exception {
+    @RequestMapping(path = "/reservation/reschedule", method = RequestMethod.PUT)
+    public ResponseEntity<ReservationDTO> rescheduleReservation(@RequestParam final Long reservationId, @RequestParam  final Long scheduleId) {
         return ResponseEntity.ok(this.reservationService.rescheduleReservation(reservationId, scheduleId));
     }
 }

@@ -3,6 +3,8 @@ package com.tenniscourts;
 import com.tenniscourts.guests.Guest;
 import com.tenniscourts.guests.GuestRequestDTO;
 import com.tenniscourts.guests.GuestResponse;
+import com.tenniscourts.reservations.CreateReservationRequestDTO;
+import com.tenniscourts.reservations.Reservation;
 import com.tenniscourts.schedules.CreateScheduleRequestDTO;
 import com.tenniscourts.schedules.Schedule;
 import com.tenniscourts.schedules.ScheduleDTO;
@@ -73,6 +75,14 @@ public class TestDataUtilities {
                 .startDateTime(LocalDateTime.now().plusDays(2))
                 .build();
     }
+
+    public static CreateReservationRequestDTO getTestReservationRequestDTO() {
+        return CreateReservationRequestDTO.builder()
+                .guestId(1L)
+                .scheduleId(1L)
+                .build();
+    }
+
 
     public static ScheduleDTO getTestScheduleResponseDTO() {
         final ScheduleDTO scheduleDTO = ScheduleDTO.builder()

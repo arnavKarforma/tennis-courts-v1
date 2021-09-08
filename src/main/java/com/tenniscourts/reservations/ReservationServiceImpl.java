@@ -4,7 +4,9 @@ import com.tenniscourts.exceptions.EntityNotFoundException;
 import com.tenniscourts.guests.Guest;
 import com.tenniscourts.guests.GuestRepository;
 import com.tenniscourts.schedules.Schedule;
+import com.tenniscourts.schedules.ScheduleDTO;
 import com.tenniscourts.schedules.ScheduleRepository;
+import com.tenniscourts.schedules.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,12 +44,14 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public ReservationDTO bookReservation(final CreateReservationRequestDTO createReservationRequestDTO) {
-        final Optional<Schedule> schedule = this.scheduleRepository.findById(createReservationRequestDTO.getScheduleId());
-        final Optional<Guest> guest = this.guestRepository.findById(createReservationRequestDTO.getGuestId());
+        final Schedule schedule = this.scheduleRepository.findById(createReservationRequestDTO.getScheduleId())
+                .orElseThrow(()-> new EntityNotFoundException("Schedule not found to book reservation"));
+        final Guest guest = this.guestRepository.findById(createReservationRequestDTO.getGuestId())
+                .orElseThrow(()-> new EntityNotFoundException("Schedule not found to book reservation"));
         final Reservation reservation = this.reservationMapper.map(createReservationRequestDTO);
-        reservation.setSchedule(schedule.get());
+        reservation.setSchedule(schedule);
         reservation.setReservationStatus(READY_TO_PLAY);
-        reservation.setGuest(guest.get());
+        reservation.setGuest(guest);
         reservation.setValue(BigDecimal.TEN);
         reservation.setRefundValue(getRefundValue(reservation));
         this.reservationRepository.save(reservation);
@@ -122,7 +126,7 @@ public class ReservationServiceImpl implements ReservationService {
     /**
      * Step 1: Check if the reservationId still exists in db and is in READY_TO_PLAY status
      * Step 2: Check if the scheduleId is till present in the db
-     * Step 3: Check if the user is requesting to schedule to the same timeslot again , if yes reject the request
+     * Step 3: Check if the user is requesting to schedule to the same timeslot again in the same tennis court, if yes reject the request
      * Step 4: Validate if the reservation still can be modified
      * Step 5: If request has reached till here, update the reservation as Rescheduled
      * Step 6: Book a new reservation, save the old one in response DTO
@@ -143,7 +147,8 @@ public class ReservationServiceImpl implements ReservationService {
         final Schedule newSchedule = this.scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("New Schedule not found."));
 
-        if (newSchedule.getStartDateTime().equals(previousReservation.getSchedule().getStartDateTime())) {
+        if (newSchedule.getStartDateTime().equals(previousReservation.getSchedule().getStartDateTime())
+                && newSchedule.getTennisCourt().getId().equals(previousReservation.getSchedule().getTennisCourt().getId())) {
             throw new IllegalArgumentException("Cannot reschedule to the same slot.");
         }
 

@@ -2,6 +2,7 @@ package com.tenniscourts.reservations;
 
 import com.tenniscourts.TestDataUtilities;
 import com.tenniscourts.exceptions.EntityNotFoundException;
+import com.tenniscourts.guests.Guest;
 import com.tenniscourts.guests.GuestRepository;
 import com.tenniscourts.schedules.Schedule;
 import com.tenniscourts.schedules.ScheduleRepository;
@@ -129,6 +130,7 @@ public class ReservationServiceTest {
         final Reservation reservation = new Reservation();
         reservation.setReservationStatus(READY_TO_PLAY);
         final Schedule schedule = new Schedule();
+        schedule.setTennisCourt(TestDataUtilities.getTestTennisCourt());
         schedule.setStartDateTime(startDateTime);
         reservation.setSchedule(schedule);
         when(this.reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
@@ -171,5 +173,29 @@ public class ReservationServiceTest {
         verify(this.reservationServiceImpl).getRefundValue(reservation);
         verify(this.reservationServiceImpl).updateReservation(reservation, BigDecimal.valueOf(7), ReservationStatus.RESCHEDULED);
         verify(this.reservationServiceImpl).bookReservation(any(CreateReservationRequestDTO.class));
+    }
+
+    @Test
+    public void bookReservationSuccess() {
+        final CreateReservationRequestDTO createReservationRequestDTO = TestDataUtilities.getTestReservationRequestDTO();
+        final Schedule schedule = TestDataUtilities.getTestSchedule();
+        final Guest guest = TestDataUtilities.getTestGuest();
+        final Reservation reservation = new Reservation();
+        final ReservationDTO reservationDTO = new ReservationDTO();
+        when(this.scheduleRepository.findById(1L)).thenReturn(Optional.of(schedule));
+        when(this.guestRepository.findById(1L)).thenReturn(Optional.of(guest));
+        when(this.reservationMapper.map(createReservationRequestDTO)).thenReturn(reservation);
+        when(this.reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
+        when(this.reservationMapper.map(reservation)).thenReturn(reservationDTO);
+        final ReservationDTO reservationDTORes = this.reservationServiceImpl.bookReservation(createReservationRequestDTO);
+        assertEquals(reservationDTO, reservationDTORes);
+
+        verify(this.scheduleRepository).findById(1L);
+        verify(this.guestRepository).findById(1L);
+        verify(this.reservationMapper).map(createReservationRequestDTO);
+        //Todo: Add argument captor to verify values going to be saved
+        verify(this.reservationRepository).save(any(Reservation.class));
+        verify(this.reservationMapper).map(reservation);
+
     }
 }
